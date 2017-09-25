@@ -1,13 +1,23 @@
-const express = require('express');
-const app = express();
+//const express = require('express');
+//const app = express();
 const fs = require('fs');
 const path = require('path');
-const bodyParse = require('body-parser');
+//const bodyParse = require('body-parser');
 const request = require('request');
+const Koa = require('koa');
+const app = new Koa();
+const bodyParser = require('koa-body-parser')();
+const serve = require('koa-static');
+const router = require('koa-router')();
+// const co = require('co');
 
-app.use(express.static('public'));
+app.use(bodyParser);
+app.use(router.routes());
+app.use(serve('./public'));
 
-app.use(bodyParse.json());
+//app.use(express.static('public'));
+
+//app.use(bodyParse.json());
 
 const readFile = (name) => {
 	return new Promise((resolve, reject) => {
@@ -52,7 +62,18 @@ const writeCards = data => {
 	})
 };
 
-app.get('/', (req, res) => {
+router.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		console.log(err);
+
+		ctx.status = 500;
+		ctx.body = err;
+	}
+})
+
+router.get('/', async ctx => {
 	res.send(`<!doctype html>
 	<html>
 		<head>
@@ -64,75 +85,67 @@ app.get('/', (req, res) => {
 	</html>`);
 });
 
-app.get('/error', (req, res) => {
+router.get('/error', async (req, res) => {
 	throw Error('Oops!');
 });
 
-app.get('/transfer', (req, res) => {
-	const {amount, from, to} = req.query;
-	res.json({
-		result: 'success',
-		amount,
-		from,
-		to
-	});
+// app.get('/transfer', async (req, res) => {
+// 	const {amount, from, to} = req.query;
+// 	res.json({
+// 		result: 'success',
+// 		amount,
+// 		from,
+// 		to
+// 	});
+// });
+
+router.get('/cards', async (ctx, next) => {
+	ctx.body = await readCards()
+		.catch(next);
 });
 
-app.get('/cards', (req, res, next) => {
-	return readCards()
-		.then(cards => {
-			return res.json(cards);
-		})
-		.catch(next)
-});
-
-app.post('/cards', (req, res, next) => {
-	const newCard = {
-		cardNumber: req.body.cardNumber,
-		balance: req.body.balance
-	};
+router.post('/cards', async (ctx, next) => {
+	const newCard = ctx.request.body;
 
 	if (!newCard.cardNumber || !newCard.balance) {
-		res.status(400);
-		return res.json('Invalid card data');
+		ctx.status = 400;
+		return ctx.body = 'Invalid card data';
 	}
-	return readCards()
-		.then(cards => {
-			cards.push(newCard);
-
-			return writeCards(cards);
-		})
-		.then(() => {
-			return res.json(newCard)
-		})
+	const cards = await readCards();
+	await writeCards(cards.concat(newCard))
 		.catch(next);
+
+	ctx.body = newCard;
 });
 
-app.delete('/cards/:id', (req, res, next) => {
-	const cardId = parseInt(req.params.id, 10);
+router.delete('/cards/:id', async (ctx, next) => {
+	const cardId = parseInt(ctx.params.id, 10);
 	if (isNaN(cardId)) {
-		res.status(400);
-		return res.json('Invalid card id');
+		ctx.status = 400;
+		return ctx.body = 'Invalid card id';
 	}
 
-	return readCards()
-		.then(cards => {
-			if (cards.length <= cardId) {
-				res.status(404);
-				throw new Error('Card not found');
-			}
+	const cards = await readCards().catch(next);
 
-			cards.splice(cardId, 1);
+	if (cards.length <= cardId) {
+		ctx.status = 404;
+		throw new Error('Card not found');
+	}
 
-			return writeCards(cards);
-		})
-		.then(() => {
-			return res.json({success: true});
-		})
-		.catch(next);
+	cards.splice(cardId, 1);
+
+	await writeCards(cards).catch(next);
+
+	ctx.body = 'class';
+
 });
 
-app.use('/config', (req, res, next) => {
+function* makeRequest() {
+	let data = yield readFile('config.json');
+	return doRequest(data.url);
+}
+
+router.use('/config', (req, res, next) => {
 	return readFile('config.json').then(config => {
 		return doRequest(config.url);
 	}).then(data => {
@@ -143,11 +156,15 @@ app.use('/config', (req, res, next) => {
 	}).catch(next);
 });
 
-app.use((err, req, res, next) => {
-	console.log(err);
+router.use('/async_config', async (req, res) => {
+	const config = await readFile('config.json');
+	const data = await doRequest(config.url);
 
-	res.status(500).json(err);
-})
+	const statusCode = data.response.statusCode;
+	console.log('statusCode', statusCode);
+
+	res.json(statusCode);
+});
 
 app.listen(3000, () => {
 	console.log('YM Node School App listening on port 3000!');
