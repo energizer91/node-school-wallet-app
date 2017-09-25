@@ -16,7 +16,8 @@
     "node": "^8.2"
   },
   "dependencies": {
+    "body-parser": "latest",
     "express": "^4.15.3",
-    "body-parser": "latest"
+    "request": "^2.82.0"
   }
 }

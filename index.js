@@ -3,14 +3,15 @@ const app = express();
 const fs = require('fs');
 const path = require('path');
 const bodyParse = require('body-parser');
+const request = require('request');
 
 app.use(express.static('public'));
 
 app.use(bodyParse.json());
 
-const readCards = () => {
+const readFile = (name) => {
 	return new Promise((resolve, reject) => {
-		fs.readFile(path.resolve('source', 'cards2.json'), (err, file) => {
+		fs.readFile(path.resolve('source', name), (err, file) => {
 			if (err) {
 				return reject(err);
 			}
@@ -19,6 +20,24 @@ const readCards = () => {
 			return resolve(cards);
 		});
 	})
+};
+
+const doRequest = (url) => {
+	return new Promise((resolve, reject) => {
+		return request(url, (err, response, body) => {
+			if (err) {
+				return reject(err);
+			}
+
+			return resolve({
+				body, response
+			});
+		})
+	});
+}
+
+const readCards = () => {
+	return readFile('cards.json');
 };
 
 const writeCards = data => {
@@ -111,6 +130,17 @@ app.delete('/cards/:id', (req, res, next) => {
 			return res.json({success: true});
 		})
 		.catch(next);
+});
+
+app.use('/config', (req, res, next) => {
+	return readFile('config.json').then(config => {
+		return doRequest(config.url);
+	}).then(data => {
+		const statusCode = data.response.statusCode;
+		console.log('statusCode', statusCode);
+
+		res.json(statusCode);
+	}).catch(next);
 });
 
 app.use((err, req, res, next) => {
