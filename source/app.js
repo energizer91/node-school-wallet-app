@@ -1,21 +1,42 @@
 'use strict';
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const getCardsController = require('./controllers/get-cards');
-const createCardController = require('./controllers/create-card');
-const deleteCardController = require('./controllers/delete-card');
-const errorController = require('./controllers/error');
+const Koa = require('koa');
+const app = new Koa();
+const bodyParser = require('koa-body-parser')();
+const serve = require('koa-static');
+const Router = require('koa-router');
+const fs = require('fs');
+const path = require('path');
 
-const app = express();
+const router = new Router();
 
-app.use(bodyParser.json());
-app.param(['id'], (req, res, next) => next());
+app.use(bodyParser);
+app.use(router.routes());
+app.use(serve('./public'));
 
-app.get('/cards/', getCardsController);
-app.post('/cards/', createCardController);
-app.delete('/cards/:id', deleteCardController);
-app.all('/error', errorController);
+app.use(async (ctx, next) => {
+	try {
+		await next();
+	} catch (err) {
+		console.log('Error detected', err);
+		ctx.status = err.status || 500;
+		ctx.body = `Error [${err.message}] :(`;
+	}
+});
+
+router.param('id', (req, res, next) => next());
+
+fs.readdir(path.join(__dirname, 'controllers'), (err, routes) => {
+	if (err) {
+		return console.error('cannot load routes', err);
+	}
+
+	routes.forEach(route => {
+		const routeData = require(path.join(__dirname, 'controllers', route))(Router);
+
+		app.use(routeData);
+	})
+});
 
 app.listen(3000, () => {
 	console.log('Application started');

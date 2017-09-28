@@ -1,0 +1,50 @@
+[
+    {
+        "cardId": 2,
+        "type": "paymentMobile",
+        "sum": 200,
+        "data": "220003000000003",
+        "id": 1,
+        "time": "2017-09-28T13:21:15.730Z"
+    },
+    {
+        "cardId": 2,
+        "type": "paymentMobile",
+        "sum": 100,
+        "data": "220003000000003",
+        "id": 2,
+        "time": "2017-09-28T13:22:05.745Z"
+    },
+    {
+        "cardId": 1,
+        "type": "prepaidCard",
+        "sum": 150,
+        "data": "220003000000003",
+        "id": 3,
+        "time": "2017-09-28T13:22:15.498Z"
+    },
+    {
+        "cardId": 2,
+        "type": "prepaidCard",
+        "sum": 150,
+        "data": "220003000000003",
+        "id": 4,
+        "time": "2017-09-28T13:24:15.800Z"
+    },
+    {
+        "cardId": 2,
+        "type": "prepaidCard",
+        "sum": 150,
+        "data": "220003000000003",
+        "id": 5,
+        "time": "2017-09-28T13:24:31.195Z"
+    },
+    {
+        "cardId": 2,
+        "type": "prepaidCard",
+        "sum": 150,
+        "data": "220003000000003",
+        "id": 6,
+        "time": "2017-09-28T13:25:12.226Z"
+    }
+]
