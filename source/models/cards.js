@@ -1,32 +1,22 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+const Model = require('./common/model');
 
 const ApplicationError = require('../../libs/application-error');
 
-class Cards {
-	constructor (params) {
-		this.params = Object.assign({
-			filename: path.resolve(__dirname, '..', 'data', 'cards.json')
-		}, params);
+class Cards extends Model {
+	constructor () {
+		super('cards.json');
 	}
 
 	/**
-	 * Возвращает все карты
-	 * @returns {Promise}
+	 * Возвращает все карту по id
+	 * @param {Number} id идентификатор карты
+	 * @returns {Object[]}
 	 */
-	getAll () {
-		return new Promise((resolve, reject) => {
-			fs.readFile(this.params.filename, (err, file) => {
-				if (err) {
-					return reject(err);
-				}
-				const cards = JSON.parse(file);
-
-				return resolve(cards);
-			});
-		})
+	async getById (id) {
+		const cards = await this.getAll();
+		return cards.filter(t => t.id === id);
 	}
 
 	/**
@@ -36,16 +26,26 @@ class Cards {
 	 * @returns {Object}
 	 */
 	async create (card) {
-		const isDataValid = card && card.hasOwnProperty('cardNumber') && card.hasOwnProperty('balance');
-		if (isDataValid) {
-			const cards = await this.getAll();
-			card.id = cards.length + 1;
-			cards.push(card);
-			await this._saveUpdates(cards);
-			return card;
+		try {
+			this.validate(card, [
+				{
+					name: 'cardNumber',
+					pattern: /^\w{16}$/
+				},
+				{
+					name: 'balance',
+					pattern: /^\d+$/
+				}
+			]);
+		} catch (e) {
+			throw new ApplicationError(e, 400);
 		}
 
-		throw new ApplicationError('Card data is invalid', 400);
+		const cards = await this.getAll();
+		card.id = cards.length + 1;
+		cards.push(card);
+		await this._saveUpdates(cards);
+		return card;
 	}
 
 	/**
@@ -63,22 +63,6 @@ class Cards {
 		}
 		cards.splice(cardId, 1);
 		await this._saveUpdates(cards);
-	}
-
-	/**
-	 * Сохраняет изменения
-	 * @private
-	 */
-	_saveUpdates (data) {
-		return new Promise((resolve, reject) => {
-			fs.writeFile(this.params.filename, JSON.stringify(data, null, 4), (err) => {
-				if (err) {
-					return reject(err);
-				}
-
-				return resolve();
-			});
-		})
 	}
 }
 
