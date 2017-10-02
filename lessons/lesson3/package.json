@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "./node_modules/.bin/stylelint . && ./node_modules/.bin/eslint .",
+	"build": "./node_modules/.bin/webpack",
     "start": "./node_modules/.bin/gulp"
   },
   "author": "",
