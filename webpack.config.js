@@ -1,31 +1,39 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-const path = require('path')
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-	entry: './source/client/index.js',
+	entry: './source/ssr.js',
 	output: {
-		path: path.resolve(__dirname, '..', '..', 'build'),
-		filename: 'bundle.js'
+		path: path.resolve(__dirname, 'dist'),
+		filename: 'server.js',
+		libraryTarget: 'commonjs2',
+		publicPath: '/assets/'
+	},
+	target: 'node',
+	node: {
+		console: false,
+		global: false,
+		process: false,
+		Buffer: false,
+		__filename: false,
+		__dirname: false
 	},
 	module: {
-		rules: [
+		loaders: [
 			{
 				test: /\.js$/,
-				use: [
-					'eslint-loader',
-					'babel-loader'
-				]
+				loader: 'babel-loader',
+				include: path.join(__dirname, '.', 'source'),
+				exclude: path.join(__dirname, '.', 'node_modules')
 			},
 			{
 				test: /\.css$/,
-				use: [
-					'style-loader',
-					'css-loader',
-					'postcss-loader'
-				]
+				use: ExtractTextPlugin.extract(['css-loader'])
 			}
 		]
 	},
-	plugins: [new HtmlWebpackPlugin()]
-}
+	plugins: [
+		new ExtractTextPlugin('style.css')
+	]
+};
+
