@@ -18,6 +18,6 @@ const Avatar = styled.img`
 export default () => (
 	<User>
 		<Avatar src="/assets/avatar.png" />
-		Samuel Johnson
+		Sergey Vegedson
 	</User>
 );

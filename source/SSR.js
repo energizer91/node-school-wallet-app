@@ -1,6 +1,6 @@
 import React from 'react';
 import {renderToString} from 'react-dom/server';
-import { extractCritical } from 'emotion-server';
+import {extractCritical} from 'emotion-server';
 import template from './browser';
 import App from './client/components/App';
 
