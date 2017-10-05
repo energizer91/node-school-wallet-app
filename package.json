@@ -35,7 +35,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-emotion": "^7.3.2",
-    "request": "^2.82.0"
+    "request": "^2.82.0",
+    "serialize-javascript": "^1.4.0"
   },
   "devDependencies": {
     "antd": "^2.12.8",

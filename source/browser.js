@@ -1,4 +1,4 @@
-module.exports = ({body, css, title}) => {
+module.exports = ({body, css, ids, title}) => {
 	return `
     <!DOCTYPE html>
     <html>
@@ -8,6 +8,7 @@ module.exports = ({body, css, title}) => {
         <title>${title}</title>
         <style>${css}</style>
         <link rel="stylesheet" href="/style.css" />
+        <script>window.__data = ${ids}</script>
       </head>
       
       <body>
