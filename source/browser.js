@@ -14,6 +14,7 @@ module.exports = ({body, css, ids, title}) => {
       <body>
         <div id="root">${body}</div>
       </body>
+      <script src="/bundle.js"></script>
     </html>
   `;
 };

@@ -5,7 +5,7 @@ import serialize from 'serialize-javascript';
 import template from './browser';
 import App from './client/components/App';
 
-export default function render(ctx) {
+module.exports = function render(ctx) {
 	const {html, ids, css} = extractCritical(renderToString(<App />));
 	ctx.body = template({
 		body: html,

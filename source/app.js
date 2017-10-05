@@ -6,9 +6,12 @@ const app = new Koa();
 const bodyParser = require('koa-body-parser')();
 const serve = require('koa-static');
 const Router = require('koa-router');
-const fs = require('fs');
-const path = require('path');
-const ssr = require('../public/bundle');
+const ssr = require('../dist/server');
+const cards = require('./controllers/cards');
+const transactions = require('./controllers/transactions');
+//const logger = require('../libs/logger')('school');
+
+const logger = console;
 
 const router = new Router();
 
@@ -17,33 +20,23 @@ app.use(router.routes());
 app.use(serve('../public'));
 
 app.use(async (ctx, next) => {
+	console.log('can you hear me?');
 	try {
 		await next();
 	} catch (err) {
-		console.log('Error detected', err);
+		logger.log('Error detected', err);
 		ctx.status = err.status || 500;
 		ctx.body = `Error [${err.message}] :(`;
 	}
 });
 
-router.param('id', (req, res, next) => next());
+router.param('id', (ctx, next) => next());
 
-router.get('/', ssr.default);
+router.get('/', ssr);
 
-
-fs.readdir(path.join(__dirname, 'controllers'), (err, routes) => {
-	if (err) {
-		throw new Error('error parsing directory');
-	}
-
-	routes.forEach((route) => {
-		const routeData = require(path.join(__dirname, 'controllers', route))(Router); //eslint-disable-line
-
-		app.use(routeData);
-	});
-});
-
+app.use(cards(Router));
+app.use(transactions(Router));
 
 app.listen(3000, () => {
-	console.log('Application started');
+	logger.log('Application started');
 });
