@@ -8,13 +8,13 @@ const serve = require('koa-static');
 const Router = require('koa-router');
 const fs = require('fs');
 const path = require('path');
-const ssr = require('../dist/server');
+const ssr = require('../public/bundle');
 
 const router = new Router();
 
 app.use(bodyParser);
 app.use(router.routes());
-app.use(serve('../dist'));
+app.use(serve('../public'));
 
 app.use(async (ctx, next) => {
 	try {

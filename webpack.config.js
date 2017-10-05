@@ -4,8 +4,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
 	entry: './source/ssr.js',
 	output: {
-		path: path.resolve(__dirname, 'dist'),
-		filename: 'server.js',
+		path: path.resolve(__dirname, 'public'),
+		filename: 'bundle.js',
 		libraryTarget: 'commonjs2',
 		publicPath: '/assets/'
 	},
@@ -22,13 +22,14 @@ module.exports = {
 		loaders: [
 			{
 				test: /\.js$/,
-				loader: 'babel-loader',
-				include: path.join(__dirname, '.', 'source'),
-				exclude: path.join(__dirname, '.', 'node_modules')
+				loader: 'babel-loader'
 			},
 			{
 				test: /\.css$/,
-				use: ExtractTextPlugin.extract(['css-loader'])
+				loader: ExtractTextPlugin.extract({
+					fallback: 'isomorphic-style-loader',
+					use: ['css-loader']
+				})
 			}
 		]
 	},
