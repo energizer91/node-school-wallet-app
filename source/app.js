@@ -9,7 +9,10 @@ const Router = require('koa-router');
 const ssr = require('../dist/server');
 const cards = require('./controllers/cards');
 const transactions = require('./controllers/transactions');
-//const logger = require('../libs/logger')('school');
+// const logger = require('../libs/logger')('school');
+
+const CardsModel = require('./models/cards');
+const TransactionsModel = require('./models/transactions');
 
 const logger = console;
 
@@ -20,7 +23,6 @@ app.use(router.routes());
 app.use(serve('../public'));
 
 app.use(async (ctx, next) => {
-	console.log('can you hear me?');
 	try {
 		await next();
 	} catch (err) {
@@ -34,8 +36,13 @@ router.param('id', (ctx, next) => next());
 
 router.get('/', ssr);
 
-app.use(cards(Router));
-app.use(transactions(Router));
+const models = {
+	cards: new CardsModel(),
+	transactions: new TransactionsModel()
+};
+
+app.use(cards(Router, models));
+app.use(transactions(Router, models));
 
 app.listen(3000, () => {
 	logger.log('Application started');

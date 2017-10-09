@@ -16,7 +16,7 @@ class Cards extends Model {
 	 */
 	async getById (id) {
 		const cards = await this.getAll();
-		return cards.filter(t => t.id === id);
+		return cards.filter(t => t.id === id)[0];
 	}
 
 	/**
@@ -25,7 +25,7 @@ class Cards extends Model {
 	 * @param {Object} card описание карты
 	 * @returns {Object}
 	 */
-	async create (card) {
+	async create(card) {
 		try {
 			this.validate(card, [
 				{
@@ -46,6 +46,29 @@ class Cards extends Model {
 		cards.push(card);
 		await this._saveUpdates(cards);
 		return card;
+	}
+
+	async update(data) {
+		try {
+			this.validate(data, [
+				{
+					name: 'id',
+					pattern: /^\d+$/
+				}
+			]);
+		} catch (e) {
+			throw new ApplicationError(e, 400);
+		}
+
+		const cards = await this.getAll();
+		const currentCard = cards.findIndex((card) => card.id === data.id);
+		if (currentCard < 0) {
+			throw new ApplicationError('Card not found');
+		}
+
+		cards[currentCard] = data;
+		await this._saveUpdates(cards);
+		return cards[currentCard];
 	}
 
 	/**

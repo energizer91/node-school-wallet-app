@@ -1,13 +1,11 @@
-const TransactionsModel = require('../models/transactions');
-
 const ApplicationError = require('../../libs/application-error');
 
-const transactions = new TransactionsModel();
-
-module.exports = function(Router) {
+module.exports = function(Router, models) {
 	const router = new Router({
 		prefix: '/cards/:id/transactions'
 	});
+
+	const transactions = models.transactions;
 
 	router.get('/', async ctx => {
 		ctx.body = await transactions.getById(parseInt(ctx.params.id, 10));

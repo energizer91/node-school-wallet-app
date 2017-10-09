@@ -5,7 +5,7 @@ const Model = require('./common/model');
 const ApplicationError = require('../../libs/application-error');
 
 class Transactions extends Model {
-	constructor () {
+	constructor() {
 		super('transactions.json');
 	}
 
@@ -14,7 +14,7 @@ class Transactions extends Model {
 	 * @param {Number} id идентификатор карты
 	 * @returns {Object[]}
 	 */
-	async getById (id) {
+	async getById(id) {
 		const transactions = await this.getAll();
 		return transactions.filter(t => t.cardId === id);
 	}
@@ -25,7 +25,7 @@ class Transactions extends Model {
 	 * @param {Object} transaction описание транзакции
 	 * @returns {Object}
 	 */
-	async create (transaction) {
+	async create(transaction) {
 		try {
 			this.validate(transaction, [
 				{

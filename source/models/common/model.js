@@ -6,7 +6,7 @@ const path = require('path');
 class Model {
 	constructor(name) {
 		this.params = {
-			filename: path.resolve('source', 'data', name)
+			filename: path.resolve('data', name)
 		};
 	}
 

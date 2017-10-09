@@ -7,7 +7,9 @@
     "build": "webpack",
     "start": "NODE_PATH=. node ./source/app.js",
     "watch": "NODE_PATH=. nodemon --watch source ./source/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+	"precommit": "eslint",
+	"prepush": "eslint"
   },
   "repository": {
     "type": "git",
@@ -64,6 +66,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "extract-text-webpack-plugin": "^3.0.1",
     "html-webpack-plugin": "^2.30.1",
+    "husky": "^0.14.3",
     "ignore-loader": "^0.1.2",
     "isomorphic-style-loader": "^4.0.0",
     "postcss-loader": "^2.0.6",
