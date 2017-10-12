@@ -54,7 +54,7 @@ class Prepaid extends Component {
 			<PrepaidContract
 				activeCard={activeCard}
 				inactiveCardsList={inactiveCardsList}
-				onPaymentSuccess={(transaction) => this.onPaymentSuccess(transaction)} />
+				onPaymentSuccess={(successTransaction) => this.onPaymentSuccess(successTransaction)} />
 		);
 	}
 }

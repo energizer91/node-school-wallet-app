@@ -38,7 +38,7 @@ class Transactions extends Model {
 				},
 				{
 					name: 'data',
-					pattern: /^\w+$/
+					pattern: /^.+$/
 				},
 				{
 					name: 'sum',

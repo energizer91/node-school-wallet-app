@@ -26,14 +26,14 @@ module.exports = function(Router, models) {
 
 	router.post('/:id/pay', async (ctx) => {
 		const card = await cards.getById(parseInt(ctx.params.id, 10));
-		const amount = ctx.request.body.amount;
-		const phone = ctx.request.body.phone;
+		const amount = parseInt(ctx.request.body.amount, 10);
+		const phone = ctx.request.body.phoneNumber;
 
 		if (!card) {
 			throw new Error('Card not found');
 		}
 
-		await models.transactions.create({
+		const result = await models.transactions.create({
 			type: 'paymentMobile',
 			cardId: card.id,
 			sum: amount,
@@ -42,7 +42,7 @@ module.exports = function(Router, models) {
 
 		card.balance -= amount;
 
-		return cards.update(card);
+		ctx.body = result;
 	});
 
 	router.post('/:id/transfer', async (ctx) => {
@@ -71,7 +71,7 @@ module.exports = function(Router, models) {
 		await cards.update(card1);
 		await cards.update(card2);
 
-		return {ok: true};
+		ctx.body = await {ok: true};
 	});
 
 	return router.routes();

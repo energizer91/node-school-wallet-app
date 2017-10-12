@@ -67,6 +67,8 @@ class App extends Component {
 			cardHistory,
 			activeCardIndex: 0
 		};
+
+		this.onUpdateHistory = this.onUpdateHistory.bind(this);
 	}
 
 	/**
@@ -107,6 +109,12 @@ class App extends Component {
 		this.setState({activeCardIndex});
 	}
 
+	onUpdateHistory(newHistoryItem) {
+		this.setState({
+			cardHistory: this.state.cardHistory.concat(newHistoryItem)
+		});
+	};
+
 	/**
 	 * Рендер компонента
 	 *
@@ -135,7 +143,7 @@ class App extends Component {
 							inactiveCardsList={inactiveCardsList}
 							onCardChange={(newActiveCardIndex) => this.onCardChange(newActiveCardIndex)}
 						/>
-						<MobilePayment activeCard={activeCard} />
+						<MobilePayment activeCard={activeCard} onUpdateHistory={this.onUpdateHistory} />
 						<Withdraw
 							activeCard={activeCard}
 							inactiveCardsList={inactiveCardsList}

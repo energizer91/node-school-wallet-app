@@ -72,7 +72,7 @@ const RepeatPayment = styled.button`
 `;
 
 const MobilePaymentSuccess = ({transaction, repeatPayment}) => {
-	const {sum, phoneNumber, commission} = transaction;
+	const {sum, phoneNumber, commission, id} = transaction;
 
 	return (
 		<MobilePaymentLayout>
@@ -82,7 +82,7 @@ const MobilePaymentSuccess = ({transaction, repeatPayment}) => {
 			<CommissionTips>В том числе комиссия {commission} ₽</CommissionTips>
 			<Section>
 				<SectionLabel>Номер транзакции</SectionLabel>
-				<SectionValue>200580211311</SectionValue>
+				<SectionValue>{id}</SectionValue>
 			</Section>
 			<Section>
 				<SectionLabel>Номер телефона</SectionLabel>
@@ -100,7 +100,8 @@ MobilePaymentSuccess.propTypes = {
 	transaction: PropTypes.shape({
 		sum: PropTypes.string,
 		phoneNumber: PropTypes.string,
-		commission: PropTypes.number
+		commission: PropTypes.number,
+		id: PropTypes.number
 	}).isRequired,
 	repeatPayment: PropTypes.func.isRequired
 };

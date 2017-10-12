@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import styled from 'emotion/react';
 
+import axios from 'axios';
+
 import {Island, Title, Button, Input} from './';
 
 const MobilePaymentLayout = styled(Island)`
@@ -110,12 +112,33 @@ class MobilePaymentContract extends Component {
 
 		const {sum, phoneNumber, commission} = this.state;
 
+		const {activeCard} = this.props;
+
 		const isNumber = !isNaN(parseFloat(sum)) && isFinite(sum);
 		if (!isNumber || sum === 0) {
 			return;
 		}
 
-		this.props.onPaymentSuccess({sum, phoneNumber, commission});
+		axios.post(`/cards/${activeCard.id}/pay`, {
+			amount: sum,
+			phoneNumber
+		})
+			.then((data) => {
+				if (!data.data) {
+					throw new Error('internal error');
+				}
+
+				const result = data.data;
+
+				result.phoneNumber = data.data.data;
+				result.commission = commission;
+
+				this.props.onPaymentSuccess(result);
+				this.props.onUpdateHistory(data.data);
+			})
+			.catch((err) => {
+				console.error(err);
+			});
 	}
 
 	/**
@@ -181,7 +204,8 @@ MobilePaymentContract.propTypes = {
 		id: PropTypes.number,
 		theme: PropTypes.object
 	}).isRequired,
-	onPaymentSuccess: PropTypes.func.isRequired
+	onPaymentSuccess: PropTypes.func.isRequired,
+	onUpdateHistory: PropTypes.func.isRequired
 };
 
 export default MobilePaymentContract;

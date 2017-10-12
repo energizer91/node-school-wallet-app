@@ -8,8 +8,10 @@
     "start": "NODE_PATH=. node ./source/app.js",
     "watch": "NODE_PATH=. nodemon --watch source ./source/app.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-	"precommit": "eslint",
-	"prepush": "eslint"
+    "lint": "eslint",
+    "foreign-lint": "npx -p node-bin@6 -- eslint .",
+    "precommit": "npm run lint",
+    "prepush": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
     "node": "^8.2"
   },
   "dependencies": {
+    "axios": "^0.16.2",
     "babel": "^6.23.0",
     "body-parser": "latest",
     "card-info": "git+https://github.com/iniel/card-info.git",

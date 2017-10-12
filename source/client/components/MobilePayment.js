@@ -23,6 +23,7 @@ class MobilePayment extends Component {
 	 * @param {Object} transaction данные о транзакции
 	 */
 	onPaymentSuccess(transaction) {
+		console.log(transaction);
 		this.setState({
 			stage: 'success',
 			transaction
@@ -43,7 +44,7 @@ class MobilePayment extends Component {
 	 * @returns {JSX}
 	 */
 	render() {
-		const {activeCard} = this.props;
+		const {activeCard, onUpdateHistory} = this.props;
 
 		if (this.state.stage === 'success') {
 			return (
@@ -57,6 +58,7 @@ class MobilePayment extends Component {
 		return (
 			<MobilePaymentContract
 				activeCard={activeCard}
+				onUpdateHistory={onUpdateHistory}
 				onPaymentSuccess={(transaction) => this.onPaymentSuccess(transaction)} />
 		);
 	}
@@ -66,7 +68,8 @@ MobilePayment.propTypes = {
 	activeCard: PropTypes.shape({
 		id: PropTypes.number,
 		theme: PropTypes.object
-	}).isRequired
+	}).isRequired,
+	onUpdateHistory: PropTypes.func.isRequired
 };
 
 export default MobilePayment;
